@@ -51,5 +51,22 @@ t <- matrix(ncol=1,nrow=nrow(temp_beznau))
 t[,1] <- diff/(100*365.25)
 monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1))
 AIC_monthly1 <- 2*monthly_trig$nllh+2+2*(1+1)/(n-1-1)
+
+# plot diagnostic for constant
+gev.diag(monthly_trig)
+
+# plot for best K=1
+t <- matrix(ncol=3,nrow=nrow(temp_beznau))
+t[,1] <- diff/(100*365.25)
+# sine 
+for (i in seq(1)) {
+  t[,i+1] <- sin(2*(i+1)*pi*diff/365.25)
+}
+# cos
+for (i in seq(1)) {
+  t[,i+1+1] <- sin(2*(i+1+1)*pi*diff/365.25)
+}
+monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1:2*1+1))
+
 # plot diagnostic for constant
 gev.diag(monthly_trig)
