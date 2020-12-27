@@ -30,10 +30,10 @@ for (i in seq(nrow(temp_beznau))) {
   str <- paste(toString(temp_beznau$year[i]),toString(temp_beznau$mon[i]),toString(temp_beznau$day[i]),sep="/")
   diff[i] <- as.Date(str)-t0
 }
-AIC_monthly <- seq(9)
-for (K in seq(9)){
+AIC_monthly <- seq(6)
+for (K in seq(6)){
   t <- matrix(ncol=K*2+1,nrow=nrow(temp_beznau))
-  t[,1] <- diff/(100+365.25)
+  t[,1] <- diff/(100*365.25)
   # sine 
   for (i in seq(K)) {
     t[,i+1] <- sin(2*(i+1)*pi*diff/365.25)
@@ -45,6 +45,11 @@ for (K in seq(9)){
   monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1:2*K+1))
   
   # AIC = -2 * LL + 2 * p + 2*p*(p+1)/(n-p-1)
-  AIC_monthly[K] <- 2*monthly_trig$nllh+2*K +2*K*(K+1)/(n-K-1)
+  AIC_monthly[K] <- 2*monthly_trig$nllh+2*(K+3) +2*(K+3)*(K+4)/(n-K+2)
 }
-
+t <- matrix(ncol=1,nrow=nrow(temp_beznau))
+t[,1] <- diff/(100*365.25)
+monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1))
+AIC_monthly1 <- 2*monthly_trig$nllh+2+2*(1+1)/(n-1-1)
+# plot diagnostic for constant
+gev.diag(monthly_trig)
