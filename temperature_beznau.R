@@ -24,12 +24,13 @@ annual_fit = gev.fit(annual)
 # linear model GEV for monthly maxima
 t=matrix(ncol=1,nrow=nrow(temp_beznau))
 t[,1]=seq(1,nrow(temp_beznau),1)
-gev.fit(temp_beznau$max,ydat=t,mul=1)
+monthly_lin <-gev.fit(temp_beznau$max,ydat=t,mul=1)
 
 # model with trig functions?
 t=matrix(ncol=9,nrow=nrow(temp_beznau))
 # choose t0 as 155
 t[,1] <- (seq(1,nrow(temp_beznau),1)-155)/(100+365.25)
+# choosing K as 4 (12 was too much didn't work)
 # sine 
 for (i in seq(1,4,1)) {
   t[,i+1] <- sin(2*(i+1)*pi*(seq(1,nrow(temp_beznau),1)-155)/365.25)
@@ -38,5 +39,11 @@ for (i in seq(1,4,1)) {
 for (i in seq(1,4,1)) {
   t[,i+5] <- sin(2*(i+5)*pi*(seq(1,nrow(temp_beznau),1)-155)/365.25)
 }
-gev.fit(temp_beznau$max,ydat=t,mul=c(1:9))
+monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1:9))
 
+# AIC = -2/N * LL + 2 * k/N
+N <- nrow(temp_beznau)
+AIC_monthly1 <- 2/N*monthly_fit$nllh+2*1/N
+AIC_annual <- 2/N*annual_fit$nllh+2*1/N
+AIC_monthly2 <- 2/N*monthly_lin$nllh+2*2/N
+AIC_monthly3 <- 2/N*monthly_lin$nllh+2*8/N
