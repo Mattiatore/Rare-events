@@ -26,3 +26,10 @@ t=matrix(ncol=1,nrow=nrow(temp_beznau))
 t[,1]=seq(1,nrow(temp_beznau),1)
 gev.fit(temp_beznau$max,ydat=t,mul=1)
 
+# model with trig functions?
+t=matrix(ncol=3,nrow=nrow(temp_beznau))
+t[,1]=seq(1,nrow(temp_beznau),1)
+t[,2]=sin(2*pi*temp_beznau$max)
+t[,3]=cos(2*pi*temp_beznau$max)
+gev.fit(temp_beznau$max,ydat=t,mul=3)
+
