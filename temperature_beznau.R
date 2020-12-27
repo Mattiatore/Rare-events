@@ -41,9 +41,12 @@ for (i in seq(1,4,1)) {
 }
 monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1:9))
 
-# AIC = -2/N * LL + 2 * k/N
-N <- nrow(temp_beznau)
-AIC_monthly1 <- 2/N*monthly_fit$nllh+2*1/N
-AIC_annual <- 2/N*annual_fit$nllh+2*1/N
-AIC_monthly2 <- 2/N*monthly_lin$nllh+2*2/N
-AIC_monthly3 <- 2/N*monthly_lin$nllh+2*8/N
+# AIC = -2 * LL + 2 * p + 2*p*(p+1)/(n-p-1)
+n <- nrow(temp_beznau)
+p <- 1
+AIC_monthly1 <- 2*monthly_fit$nllh +2*p +2*p*(p+1)/(n-p-1)
+AIC_annual <- 2*annual_fit$nllh+2*p +2*p*(p+1)/(n-p-1)
+p <- 2
+AIC_monthly2 <- 2*monthly_lin$nllh+2*p +2*p*(p+1)/(n-p-1)
+p<- 9
+AIC_monthly3 <- 2*monthly_lin$nllh+2*p +2*p*(p+1)/(n-p-1)
