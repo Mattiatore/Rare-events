@@ -129,3 +129,12 @@ return_non_statio <- function(r,t){
   somma <- monthly_trig$mle[2]*sin(2*pi*(T)/365.25) + monthly_trig$mle[3]*cos(2*pi*(T)/365.25)
   return (somma + monthly_trig$mle[1]+monthly_trig$mle[L-1]/monthly_trig$mle[L]*(-1+(-log(1-1/r))**(-monthly_trig$mle[L])))
 }
+
+print("Return levels for annual maxima based on non-stationary GEV for day 15 of each month in year 2030.")
+for (i in seq(12)){
+  print(paste("Month",toString(i),sep=" "))
+  print(paste("100 year return level:",toString(return_non_statio(100,paste("2030",toString(i),"15",sep="/"))),sep=" "))
+  print(paste("1000 year return level:",toString(return_non_statio(1000,paste("2030",toString(i),"15",sep="/"))),sep=" "))
+  print(paste("10000 year return level:",toString(return_non_statio(10000,paste("2030",toString(i),"15",sep="/"))),sep=" "))
+}
+
