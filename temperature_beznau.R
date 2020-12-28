@@ -156,4 +156,83 @@ for (i in seq(12)){
 gev.profxi(monthly_fit,-0.6,-0.2,conf=0.95,nint=100)
 savePlot("profile_shape.jpg")
 
+# Modelling pairwise dependence in the extremes
+# drop last two as previously
+temp_muehleberg=temp_muehleberg[-2:-1,]
+# comparing with station Muhleberg
+par(mfrow=c(1,1))
+plot(ts(temp_muehleberg$max))
+savePlot("maxima_mue.jpg")
 
+# apply previous best model
+K <- 1
+t <- matrix(ncol=K*2,nrow=nrow(temp_muehleberg))
+# change diff variable
+diff <- seq(nrow(temp_muehleberg))
+for (i in seq(nrow(temp_muehleberg))) {
+  str <- paste(toString(temp_muehleberg$year[i]),toString(temp_muehleberg$mon[i]),toString(temp_muehleberg$day[i]),sep="/")
+  diff[i] <- as.Date(str)-t0
+}
+# sine 
+for (i in seq(K)) {
+  t[,i] <- sin(2*i*pi*diff/365.25)
+}
+# cos
+for (i in seq(K)) {
+  t[,i+K] <- cos(2*i*pi*diff/365.25)
+}
+monthly_mue <- gev.fit(temp_muehleberg$max,ydat=t,mul=c(1:(2*K)))
+
+if(monthly_mue$mle[5]+1.96*monthly_mue$se[5]>monthly_trig$mle[5]-1.96*monthly_trig$se[5]){
+  print("The 95% CI for xi overlap in the two series, therefore we can assume the same xi")
+} else{
+  print("The 95% CI for xi do not overlap in the two series, therefore we cannot assume the same xi")
+}
+
+#put data togheter
+temp <- matrix(ncol=2, nrow=nrow(temp_beznau))
+temp[,1] <- temp_beznau$max
+temp[,2] <- temp_muehleberg$max
+
+#high correlation
+cor(temp[,1],temp[,2])
+
+# Fitting a bivariate extreme value model with logistic dependence structure
+fit1 <- fbvevd(temp,model="log") 
+fit1 
+par(mfrow=c(3,2)) 
+plot(fit1)
+aic1 <- fit1$dev + 2*length(fit1$param)
+
+#negative logistic
+fit2 <- fbvevd(temp,model="neglog") 
+fit2
+par(mfrow=c(3,2)) 
+plot(fit2)
+aic2 <- fit2$dev + 2*length(fit2$param)
+
+#bivariate Coles-Tawn 
+fit3 <- fbvevd(temp,model="ct") 
+fit3
+par(mfrow=c(3,2)) 
+plot(fit3)
+aic3 <- fit3$dev + 2*length(fit3$param)
+
+#bivariate negative logistic 
+fit4 <- fbvevd(temp,model="negbilog") 
+fit4
+par(mfrow=c(3,2)) 
+plot(fit4)
+aic4 <- fit4$dev + 2*length(fit4$param)
+
+# Following the AIC metric the "best" model on this dataset seems to be Coles-Tawn
+print(fit3$dep.summary)
+# alpha value seem to imply extremal dependence 
+
+#sharing xi parameter
+fit7 <- fbvevd(temp,model="ct",cshape=TRUE)
+aic7 <- fit7$dev + 2*length(fit7$param)
+
+# Based on that, we better have to use a common shape parameter (the two models cannot be considered significantly different).
+fit7$dev-fit3$dev # -16.45
+qchisq(0.95,1) # 3.84
