@@ -77,3 +77,11 @@ monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1:(2*K+1)))
 
 # plot diagnostic for constant
 gev.diag(monthly_trig)
+
+if((monthly_trig$mle[1]-1.96*monthly_trig$se[1])<0){
+  print("There is no clear trend because u_1 is not different from 0 at the 95% CI")
+} else{
+  print("There is a trend because u_1 is different from 0 at the 95% CI")
+}
+
+# there is seasonal variation because some coefficients of the sin and cos are different from 0 at the 95% CI
