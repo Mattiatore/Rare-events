@@ -23,10 +23,20 @@ annual_fit = gev.fit(annual)
 return_statio <- function(r){
   return (annual_fit$mle[1]+annual_fit$mle[2]/annual_fit$mle[3]*(-1+(-log(1-1/r))**(-annual_fit$mle[3])))
 }
-print("Return levels for annual maxima based GEV")
-print(paste("100 year return level:",toString(return_statio(100),sep=" ")))
-print(paste("1000 year return level:",toString(return_statio(1000),sep=" ")))
-print(paste("10000 year return level:",toString(return_statio(10000),sep=" ")))
+print("Return levels for annual maxima based GEV and estimated standar error.")
+print(paste("100 year return level:",toString(return_statio(100)),"estiamted standard error",toString(return_statio_error(100)),sep=" "))
+print(paste("1000 year return level:",toString(return_statio(1000)),"estiamted standard error",toString(return_statio_error(1000)),sep=" "))
+print(paste("10000 year return level:",toString(return_statio(10000)),"estiamted standard error",toString(return_statio_error(10000)),sep=" "))
+# estimated errors for return levels
+return_statio_error <- function(r){
+  y = -log(1-(1/r))
+  del=matrix(ncol=1,nrow=3)
+  del[1,1]=1
+  del[2,1]=-((annual_fit$mle[3])^(-1))*(1-(y^(-annual_fit$mle[3])))
+  del[3,1]=((annual_fit$mle[2])*((annual_fit$mle[3])^(-2))*(1-((y)^(-annual_fit$mle[3]))))-((annual_fit$mle[2])*((annual_fit$mle[3])^(-1))*((y)^(-(annual_fit$mle[3])))*log(y))
+  del.transpose=t(del)
+  return (sqrt(del.transpose%*%annual_fit$cov%*%del))
+}
 
 # fitting GEV for stationary case
 monthly_fit = gev.fit(temp_beznau$max)
