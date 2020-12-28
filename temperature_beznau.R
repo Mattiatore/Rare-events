@@ -12,17 +12,24 @@ plot(ts(temp_beznau$max))
 #remove 2013 since only two months?
 temp_beznau=temp_beznau[-2:-1,]
 
-# extract annual maxima
+# extract annual maxima and their return level
 annual<-integer((nrow(temp_beznau)-11)/12+1)
 annual[1]<-max(temp_beznau$max[1:11])
 annual[2:length(annual)]<-sapply(split(temp_beznau$max[12:nrow(temp_beznau)], rep(1:(length(temp_beznau$max[12:nrow(temp_beznau)])/12), each=12)), max)
 
+#fit for annual maxima
+annual_fit = gev.fit(annual)
+#r-year return level stationary case
+return_statio <- function(r){
+  return (annual_fit$mle[1]+annual_fit$mle[2]/annual_fit$mle[3]*(-1+(-log(1-1/r))**(-annual_fit$mle[3])))
+}
+print("Return levels for annual maxima based GEV")
+print(paste("100 year return level:",toString(return_statio(100),sep=" ")))
+print(paste("1000 year return level:",toString(return_statio(1000),sep=" ")))
+print(paste("10000 year return level:",toString(return_statio(10000),sep=" ")))
+
 # fitting GEV for stationary case
 monthly_fit = gev.fit(temp_beznau$max)
-annual_fit = gev.fit(annual)
-K <- 0
-n <- length(annual)
-AIC_annual <- 2*annual_fit$nllh+2*(2*K+3) +2*(2*K+3)*(2*K+4)/(n-2*K-4)
 n <- nrow(temp_beznau)
 AIC_mon <- 2*monthly_fit$nllh+2*(2*K+3) +2*(2*K+3)*(2*K+4)/(n-2*K-4)
 
@@ -101,3 +108,4 @@ AIC_month <- 2*monthly_trig$nllh+2*(2*K) +2*(2*K)*(2*K+1)/(n-2*K-1)
 
 # plot diagnostic for best model without U_1
 gev.diag(monthly_trig)
+
