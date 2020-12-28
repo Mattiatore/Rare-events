@@ -75,7 +75,7 @@ for (i in seq(K)) {
 }
 monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1:(2*K+1)))
 
-# plot diagnostic for constant
+# plot diagnostic for K=6 from (1)
 gev.diag(monthly_trig)
 
 if((monthly_trig$mle[1]-1.96*monthly_trig$se[1])<0){
@@ -85,3 +85,19 @@ if((monthly_trig$mle[1]-1.96*monthly_trig$se[1])<0){
 }
 
 # there is seasonal variation because some coefficients of the sin and cos are different from 0 at the 95% CI
+# test model without linear term u_1 in equation (1)
+K <- 6
+t <- matrix(ncol=K*2,nrow=nrow(temp_beznau))
+# sine 
+for (i in seq(K)) {
+  t[,i] <- sin(2*(i+1)*pi*diff/365.25)
+}
+# cos
+for (i in seq(K)) {
+  t[,i+K] <- cos(2*(i+1)*pi*diff/365.25)
+}
+monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1:(2*K)))
+AIC_month <- 2*monthly_trig$nllh+2*(2*K) +2*(2*K)*(2*K+1)/(n-2*K-1)
+
+# plot diagnostic for best model without U_1
+gev.diag(monthly_trig)
