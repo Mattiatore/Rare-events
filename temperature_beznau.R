@@ -9,6 +9,7 @@ options(max.print=2000)
 # clear seasonality, maxima are during summer
 par(mfrow=c(1,1))
 plot(ts(temp_beznau$max))
+savePlot("maxima.jpg")
 
 #remove 2013 since only two months?
 temp_beznau=temp_beznau[-2:-1,]
@@ -121,6 +122,7 @@ AIC_month <- 2*monthly_trig$nllh+2*(2*K) +2*(2*K)*(2*K+1)/(n-2*K-1)
 
 # plot diagnostic for best model without U_1
 gev.diag(monthly_trig)
+savePlot("diag_best.jpg")
 
 # return levels for non stationary case
 return_non_statio <- function(r,t){
@@ -149,4 +151,9 @@ for (i in seq(12)){
   print(paste("1000 year return level:",toString(return_non_statio(1000,paste("2030",toString(i),"15",sep="/"))),"estiamted standard error",toString(return_error(1000)),sep=" "))
   print(paste("10000 year return level:",toString(return_non_statio(10000,paste("2030",toString(i),"15",sep="/"))),"estiamted standard error",toString(return_error(10000)),sep=" "))
 }
+
+# profile log-likelihoods for shape parameters of best model K=1 without u_1
+gev.profxi(monthly_fit,-0.6,-0.2,conf=0.95,nint=100)
+savePlot("profile_shape.jpg")
+
 
