@@ -130,11 +130,23 @@ return_non_statio <- function(r,t){
   return (somma + monthly_trig$mle[1]+monthly_trig$mle[L-1]/monthly_trig$mle[L]*(-1+(-log(1-1/r))**(-monthly_trig$mle[L])))
 }
 
+# approximate standard error considering parameters stationary
+return_error <- function(r){
+  y = -log(1-(1/r))
+  del=matrix(ncol=1,nrow=3)
+  del[1,1]=1
+  del[2,1]=-((monthly_trig$mle[5])^(-1))*(1-(y^(-monthly_trig$mle[5])))
+  del[3,1]=((monthly_trig$mle[4])*((monthly_trig$mle[5])^(-2))*(1-((y)^(-monthly_trig$mle[5]))))-((monthly_trig$mle[4])*((monthly_trig$mle[5])^(-1))*((y)^(-(monthly_trig$mle[5])))*log(y))
+  del.transpose=t(del)
+  return (sqrt(del.transpose%*%monthly_trig$cov[-3:-4,-3:-4]%*%del))
+}
+
+# print errors
 print("Return levels for annual maxima based on non-stationary GEV for day 15 of each month in year 2030.")
 for (i in seq(12)){
   print(paste("Month",toString(i),sep=" "))
-  print(paste("100 year return level:",toString(return_non_statio(100,paste("2030",toString(i),"15",sep="/"))),sep=" "))
-  print(paste("1000 year return level:",toString(return_non_statio(1000,paste("2030",toString(i),"15",sep="/"))),sep=" "))
-  print(paste("10000 year return level:",toString(return_non_statio(10000,paste("2030",toString(i),"15",sep="/"))),sep=" "))
+  print(paste("100 year return level:",toString(return_non_statio(100,paste("2030",toString(i),"15",sep="/"))),"estiamted standard error",toString(return_error(100)),sep=" "))
+  print(paste("1000 year return level:",toString(return_non_statio(1000,paste("2030",toString(i),"15",sep="/"))),"estiamted standard error",toString(return_error(1000)),sep=" "))
+  print(paste("10000 year return level:",toString(return_non_statio(10000,paste("2030",toString(i),"15",sep="/"))),"estiamted standard error",toString(return_error(10000)),sep=" "))
 }
 
