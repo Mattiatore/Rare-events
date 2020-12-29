@@ -230,9 +230,88 @@ print(fit3$dep.summary)
 # alpha value seem to imply extremal dependence 
 
 #sharing xi parameter
-fit7 <- fbvevd(temp,model="ct",cshape=TRUE)
-aic7 <- fit7$dev + 2*length(fit7$param)
+fit5 <- fbvevd(temp,model="ct",cshape=TRUE)
+aic5 <- fit5$dev + 2*length(fit5$param)
 
 # Based on that, we better have to use a common shape parameter (the two models cannot be considered significantly different).
-fit7$dev-fit3$dev # -16.45
+fit5$dev-fit3$dev # -16.45
 qchisq(0.95,1) # 3.84
+
+# alternative, fit gev to each month separately
+# return level considering only one month maxima series
+return_level = function(x,period=100){
+  if (is.list(x)) {
+    loc = x$estimate[[1]]
+    scale = x$estimate[[2]]
+    shape = x$estimate[[3]]
+  }
+  if (is.vector(x)) {
+    loc = x[1]
+    scale = x[2]
+    shape = x[3]
+  }
+  p = 1/period
+  
+  level = loc + scale*(((-log(1-p))^-shape-1)/shape)
+  return(level)
+}
+
+#january
+print("January:")
+jan <- seq(10,311,12)
+jan_fit <- fgev(temp_beznau$max[jan], 
+                method = "Nelder-Mead")
+par(mfrow=c(2,2))
+plot(jan_fit)
+print("Return level 100:")
+return_level(jan_fit,100)
+print("Return level 1000:")
+return_level(jan_fit,1000)
+print("Return level 10000:")
+return_level(jan_fit,10000)
+
+#february
+print("February:")
+jan <- seq(11,311,12)
+jan_fit <- fgev(temp_beznau$max[jan], 
+                method = "Nelder-Mead")
+par(mfrow=c(2,2))
+plot(jan_fit)
+print("Return level 100:")
+return_level(jan_fit,100)
+print("Return level 1000:")
+return_level(jan_fit,1000)
+print("Return level 10000:")
+return_level(jan_fit,10000)
+
+#march
+print("March:")
+jan <- seq(12,311,12)
+jan_fit <- fgev(temp_beznau$max[jan], 
+                method = "Nelder-Mead")
+par(mfrow=c(2,2))
+plot(jan_fit)
+print("Return level 100:")
+return_level(jan_fit,100)
+print("Return level 1000:")
+return_level(jan_fit,1000)
+print("Return level 10000:")
+return_level(jan_fit,10000)
+
+#other months
+names <- c("April:","May:","June:","July","August","September","October","November","December")
+for (i in seq(4,12)){
+  print(names[i-3])
+  jan <- seq(i-3,311,12)
+  jan_fit <- fgev(temp_beznau$max[jan], 
+                  method = "Nelder-Mead")
+  par(mfrow=c(2,2))
+  plot(jan_fit)
+  print("Return level 100:")
+  print(return_level(jan_fit,100))
+  print("Return level 1000:")
+  print(return_level(jan_fit,1000))
+  print("Return level 10000:")
+  print(return_level(jan_fit,10000))
+}
+
