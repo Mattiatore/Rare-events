@@ -194,6 +194,16 @@ temp <- matrix(ncol=2, nrow=nrow(temp_beznau))
 temp[,1] <- temp_beznau$max
 temp[,2] <- temp_muehleberg$max
 
+# We now examine the asymptotic dependance by using chi-chibar plots
+par(mfrow=c(1,2))
+label_chi = sprintf("Chi plot")
+label_chibar = sprintf("Chi Bar plot")
+chiplot(temp, main1 = label_chi, which=1)
+abline(a=0,b=0,col="red")
+chiplot(temp, main2 = label_chibar, which=2)
+abline(a=0,b=0,col="red")
+
+
 #high correlation
 cor(temp[,1],temp[,2])
 
@@ -315,3 +325,11 @@ for (i in seq(4,12)){
   print(return_level(jan_fit,10000))
 }
 
+# We now examine the asymptotic dependance by using chi-chibar plots
+par(mfrow=c(1,2))
+label_chi = sprintf("Chi plot")
+label_chibar = sprintf("Chi Bar plot")
+chiplot(temp, main1 = label_chi, which=1)
+abline(a=0,b=0,col="red")
+chiplot(temp, main2 = label_chibar, which=2)
+abline(a=0,b=0,col="red")
