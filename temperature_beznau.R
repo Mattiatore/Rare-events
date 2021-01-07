@@ -96,7 +96,7 @@ for (i in seq(K)) {
 }
 monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1:(2*K+1)))
 
-# plot diagnostic for K=6 from (1)
+# plot diagnostic for K=1 from (1)
 gev.diag(monthly_trig)
 
 if((monthly_trig$mle[1]-1.96*monthly_trig$se[1])<0){
