@@ -45,6 +45,7 @@ print(paste("10000 year return level:",toString(return_statio(10000)),"estiamted
 # fitting GEV for stationary case
 monthly_fit = gev.fit(temp_beznau$max)
 n <- nrow(temp_beznau)
+K<-3
 AIC_mon <- 2*monthly_fit$nllh+2*(2*K+3) +2*(2*K+3)*(2*K+4)/(n-2*K-4)
 
 # model with trig functions
@@ -76,7 +77,7 @@ for (K in seq(6)){
 t <- matrix(ncol=1,nrow=nrow(temp_beznau))
 t[,1] <- diff/(100*365.25)
 monthly_trig <- gev.fit(temp_beznau$max,ydat=t,mul=c(1))
-K <- 0
+K <- 4
 AIC_monthly1 <- 2*monthly_trig$nllh+2*(2*K+3) +2*(2*K+3)*(2*K+4)/(n-2*K-4)
 
 # plot diagnostic for constant
@@ -333,3 +334,4 @@ chiplot(temp, main1 = label_chi, which=1)
 abline(a=0,b=0,col="red")
 chiplot(temp, main2 = label_chibar, which=2)
 abline(a=0,b=0,col="red")
+
