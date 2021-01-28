@@ -1,5 +1,3 @@
 # Rare-events
-Project
-Material for report: http://www.mas.ncl.ac.uk/~nlf8/teaching/mas8391/background/
-chapter 2 page 8/9 about how we found annual maxima, pag 19 for standard errors
+Project for risk, rare events and extremes. More informations on the report.
 
